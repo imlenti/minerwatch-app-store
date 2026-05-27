@@ -2,7 +2,7 @@ manifestVersion: 1
 id: imlenti-minerwatch
 category: bitcoin
 name: MinerWatch
-version: "1.6.0"
+version: "1.6.2"
 tagline: Real-time monitor for home Bitcoin miners
 description: >-
   MinerWatch is a self-hosted, local-first dashboard for small Bitcoin
@@ -49,9 +49,9 @@ repo: https://github.com/imlenti/MinerWatch
 support: https://github.com/imlenti/MinerWatch/issues
 port: 8000
 gallery:
-  - 1.jpg
-  - 2.jpg
-  - 3.jpg
+  - 1.png
+  - 2.png
+  - 3.png
 path: ""
 defaultUsername: ""
 defaultPassword: ""

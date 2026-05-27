@@ -4,30 +4,58 @@
 # source), so `image:` must point at a published tag. This references the
 # image published by .github/workflows/docker-publish.yml to GHCR.
 #
-# IMPORTANT — network_mode: host
-# ------------------------------
-# MinerWatch needs to scan the host's /24 to auto-discover miners (and then
-# reach them by their LAN IP). Bridge networking would put the container
-# behind NAT and the discovery probes would never reach 192.168.x.x. So the
-# `web` service runs on the host network. Umbrel's app_proxy still routes the
-# UI normally because it talks to the host on the published port (8000). If
-# 8000 is already taken on the umbrelOS box, change MINERWATCH_PORT and
-# app_proxy's APP_PORT to match.
+# Networking model (why it looks the way it does)
+# ------------------------------------------------
+# MinerWatch needs to scan the host's /24 to auto-discover miners and then
+# reach them by their LAN IP. That only works zero-config when the app shares
+# the host's network namespace, so the `web` service runs with
+# `network_mode: host` — exactly like a bare-metal install, so auto-discovery
+# behaves identically.
+#
+# But host networking collides with Umbrel's app_proxy: Umbrel publishes the
+# manifest `port` (8000) on the host for the proxy, and a host-networked `web`
+# binding the *same* 8000 would fail with "address already in use". So we
+# DECOUPLE the ports:
+#   * the proxy keeps listening on the manifest port 8000 (public entry point);
+#   * `web` binds a different host port, 8765, via MINERWATCH_PORT;
+#   * the proxy forwards to that port.
+# 8000 ≠ 8765, so there's no contention for the host port.
+#
+# The proxy stays on Umbrel's bridge network (it MUST, so Umbrel's reverse
+# proxy / Tor can route to it by container name). A bridge container can't
+# reach a host-networked service via 127.0.0.1 (that's its own loopback), so we
+# point it at the host through `host.docker.internal` (mapped to the host
+# gateway via extra_hosts). Path: Umbrel → app_proxy (bridge, :8000) →
+# host.docker.internal:8765 → web (host net).
+#
+# If 8000 or 8765 is already taken on the umbrelOS box, change the manifest
+# `port` (umbrel-app.yml) and/or MINERWATCH_PORT + APP_PORT below to match.
 
 version: "3.7"
 
 services:
   app_proxy:
     environment:
-      APP_HOST: 127.0.0.1
-      APP_PORT: 8000
+      # `web` is on the host network, so it isn't reachable by container name
+      # nor via the proxy's own 127.0.0.1. Reach the host instead.
+      APP_HOST: host.docker.internal
+      # Upstream port = the host port `web` actually binds (see MINERWATCH_PORT).
+      APP_PORT: 8765
       PROXY_AUTH_ADD: "false"
+    # Map host.docker.internal to the host gateway so the bridge-networked
+    # proxy can reach the host-networked `web`. Requires Docker >= 20.10
+    # (umbrelOS ships a newer Docker, so this is satisfied).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   web:
     # Pin to a digest for production once published, e.g.
     #   ghcr.io/imlenti/minerwatch:1.6.0@sha256:<digest>
-    image: ghcr.io/imlenti/minerwatch:1.6.0
-    user: "1000:1000"
+    image: ghcr.io/imlenti/minerwatch:1.6.2
+    # NOTE: no `user:` override. The image's entrypoint starts as root only to
+    # fix ownership of the bind-mounted data dir, then drops to UID/GID 1000
+    # itself (via gosu). Pinning `user:` here would prevent that chown and
+    # reintroduce the "unable to open database file" permission error.
     restart: on-failure
     stop_grace_period: 1m
 
@@ -35,14 +63,16 @@ services:
     network_mode: host
 
     volumes:
-      - ${APP_DATA_DIR}/data:/app/data
+      - ${APP_DATA_DIR:-./data}/data:/app/data
 
     environment:
       MINERWATCH_HOST: "0.0.0.0"
-      MINERWATCH_PORT: "8000"
+      # Bind a host port distinct from the manifest port (8000) the proxy is
+      # published on — see the header comment for the full rationale.
+      MINERWATCH_PORT: "8765"
 
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/api/health', timeout=4)"]
+      test: ["CMD", "python", "-c", "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:' + os.environ.get('MINERWATCH_PORT', '8000') + '/api/health', timeout=4)"]
       interval: 30s
       timeout: 5s
       start_period: 15s
