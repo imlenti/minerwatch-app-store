@@ -12,7 +12,7 @@ umbrel-app-store.yml          # store id "imlenti" + name "MinerWatch Store"
 imlenti-minerwatch/
   umbrel-app.yml              # app manifest (id MUST be imlenti-minerwatch)
   docker-compose.yml          # pulls ghcr.io/imlenti/minerwatch:<version>
-  1.jpg 2.jpg 3.jpg           # gallery screenshots (ADD THESE — see below)
+  1.png 2.png 3.png           # gallery screenshots
   icon.svg                    # app icon (optional; ADD if desired)
 ```
 
@@ -22,19 +22,19 @@ The app `id` (`imlenti-minerwatch`) is prefixed with the store `id`
 ## Prerequisite: the Docker image must exist
 
 Umbrel **pulls** the image referenced in `docker-compose.yml`
-(`ghcr.io/imlenti/minerwatch:1.6.0`); it does not build from source. Publish it
+(`ghcr.io/imlenti/minerwatch:1.6.2`); it does not build from source. Publish it
 first via the `.github/workflows/docker-publish.yml` workflow in the main
 MinerWatch repo (push a `vX.Y.Z` tag, or run it manually with the version
 input). For production, pin to an immutable digest:
 
 ```
-image: ghcr.io/imlenti/minerwatch:1.6.0@sha256:<digest>
+image: ghcr.io/imlenti/minerwatch:1.6.2@sha256:<digest>
 ```
 
 Get the digest with:
 
 ```bash
-docker buildx imagetools inspect ghcr.io/imlenti/minerwatch:1.6.0
+docker buildx imagetools inspect ghcr.io/imlenti/minerwatch:1.6.2
 ```
 
 ## Publishing the store
@@ -45,7 +45,7 @@ docker buildx imagetools inspect ghcr.io/imlenti/minerwatch:1.6.0
 2. Copy the **contents of this folder** to the repo root (so
    `umbrel-app-store.yml` is at the top level, with `imlenti-minerwatch/`
    beside it).
-3. Add the gallery images `1.jpg`, `2.jpg`, `3.jpg` (1280×800 recommended) and
+3. Add the gallery images `1.png`, `2.png`, `3.png` (1280×800 recommended) and
    optionally `icon.svg` inside `imlenti-minerwatch/`.
 4. Commit and push.
 
