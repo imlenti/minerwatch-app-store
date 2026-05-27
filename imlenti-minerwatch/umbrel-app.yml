@@ -1,0 +1,60 @@
+manifestVersion: 1
+id: imlenti-minerwatch
+category: bitcoin
+name: MinerWatch
+version: "1.6.0"
+tagline: Real-time monitor for home Bitcoin miners
+description: >-
+  MinerWatch is a self-hosted, local-first dashboard for small Bitcoin
+  mining setups (1–10 miners). It watches BitAxe and NerdQAxe (Gamma /
+  Supra / Ultra / Max), Canaan Avalon Nano 3s & Avalon Q, and Braiins
+  BMM 101 — all on the same LAN, with no cloud round-trips.
+
+
+  Highlights:
+
+  - Sub-second polling — see throttling and pool issues the moment they
+    happen, not 15 minutes later.
+
+  - Server-side PID auto-fan replicating the BitAxe firmware controller,
+    so the dashboard can hold a target chip temperature even on miners
+    whose firmware lacks a sane curve.
+
+  - Web Push (VAPID) + Telegram bot alerts in parallel — temperature,
+    offline, recovery, new best-share, and rare block-find events.
+
+  - Block-find detection: when a share difficulty meets or exceeds the
+    current network difficulty, you get a celebratory notification and
+    a permanent trophy card in the dashboard.
+
+  - Tiered metric retention (raw 48 h → 1-min 30 d → 1-h 2 y) so the
+    SQLite database stays small while the history stays long.
+
+  - LAN auto-discovery and MAC-pinned identity, so a DHCP IP change
+    won't break a miner's history.
+
+
+  AGPL-3.0 licensed. No telemetry, no accounts, no cloud — your data
+  never leaves the LAN.
+releaseNotes: >-
+  Installable from the MinerWatch Community App Store. Supports BitAxe,
+  NerdQAxe, Canaan Avalon (Nano 3s and Q) and Braiins BMM 101. Polling at 5 s
+  by default, server-side auto-fan PID, Web Push + Telegram alerts, block-find
+  detection, tiered metric storage. Updates ship by bumping this version and
+  the image tag.
+developer: imlenti
+website: https://github.com/imlenti/MinerWatch
+dependencies: []
+repo: https://github.com/imlenti/MinerWatch
+support: https://github.com/imlenti/MinerWatch/issues
+port: 8000
+gallery:
+  - 1.jpg
+  - 2.jpg
+  - 3.jpg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+submitter: imlenti
+submission: https://github.com/imlenti/MinerWatch

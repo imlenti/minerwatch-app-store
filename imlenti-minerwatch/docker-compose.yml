@@ -1,0 +1,49 @@
+# MinerWatch — Umbrel Community App Store docker-compose.
+#
+# Umbrel installs apps by *pulling* a prebuilt image (it does not build from
+# source), so `image:` must point at a published tag. This references the
+# image published by .github/workflows/docker-publish.yml to GHCR.
+#
+# IMPORTANT — network_mode: host
+# ------------------------------
+# MinerWatch needs to scan the host's /24 to auto-discover miners (and then
+# reach them by their LAN IP). Bridge networking would put the container
+# behind NAT and the discovery probes would never reach 192.168.x.x. So the
+# `web` service runs on the host network. Umbrel's app_proxy still routes the
+# UI normally because it talks to the host on the published port (8000). If
+# 8000 is already taken on the umbrelOS box, change MINERWATCH_PORT and
+# app_proxy's APP_PORT to match.
+
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: 127.0.0.1
+      APP_PORT: 8000
+      PROXY_AUTH_ADD: "false"
+
+  web:
+    # Pin to a digest for production once published, e.g.
+    #   ghcr.io/imlenti/minerwatch:1.6.0@sha256:<digest>
+    image: ghcr.io/imlenti/minerwatch:1.6.0
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 1m
+
+    # Required for LAN auto-discovery and direct miner polling.
+    network_mode: host
+
+    volumes:
+      - ${APP_DATA_DIR}/data:/app/data
+
+    environment:
+      MINERWATCH_HOST: "0.0.0.0"
+      MINERWATCH_PORT: "8000"
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/api/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3

@@ -1,0 +1,12 @@
+# Umbrel Community App Store manifest.
+#
+# `id` is the unique prefix for every app in this store. Each app's own id
+# MUST start with this prefix — e.g. the MinerWatch app lives in the folder
+# `imlenti-minerwatch/` and its umbrel-app.yml declares `id: imlenti-minerwatch`.
+#
+# `name` is the display name of the store inside the umbrelOS UI.
+#
+# Users add this store from umbrelOS → App Store → "Community App Stores"
+# by pasting this repository's GitHub URL.
+id: imlenti
+name: "MinerWatch Store"
