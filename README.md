@@ -22,19 +22,19 @@ The app `id` (`imlenti-minerwatch`) is prefixed with the store `id`
 ## Prerequisite: the Docker image must exist
 
 Umbrel **pulls** the image referenced in `docker-compose.yml`
-(`ghcr.io/imlenti/minerwatch:1.6.3`); it does not build from source. Publish it
+(`ghcr.io/imlenti/minerwatch:1.9.1`); it does not build from source. Publish it
 first via the `.github/workflows/docker-publish.yml` workflow in the main
 MinerWatch repo (push a `vX.Y.Z` tag, or run it manually with the version
 input). For production, pin to an immutable digest:
 
 ```
-image: ghcr.io/imlenti/minerwatch:1.6.3@sha256:<digest>
+image: ghcr.io/imlenti/minerwatch:1.9.1@sha256:<digest>
 ```
 
 Get the digest with:
 
 ```bash
-docker buildx imagetools inspect ghcr.io/imlenti/minerwatch:1.6.3
+docker buildx imagetools inspect ghcr.io/imlenti/minerwatch:1.9.1
 ```
 
 ## Publishing the store
