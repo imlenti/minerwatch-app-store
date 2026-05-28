@@ -50,8 +50,8 @@ support: https://github.com/imlenti/MinerWatch/issues
 port: 8000
 gallery:
   - https://github.com/imlenti/minerwatch-app-store/blob/main/imlenti-minerwatch/1.png
-  - 2.png
-  - 3.png
+  - https://github.com/imlenti/minerwatch-app-store/blob/main/imlenti-minerwatch/2.png
+  - https://github.com/imlenti/minerwatch-app-store/blob/main/imlenti-minerwatch/3.png
 path: ""
 defaultUsername: ""
 defaultPassword: ""
