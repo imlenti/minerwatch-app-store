@@ -50,7 +50,7 @@ services:
 
   web:
     # Pin to a digest for production once published, e.g.
-    #   ghcr.io/imlenti/minerwatch:1.6.0@sha256:<digest>
+    #   ghcr.io/imlenti/minerwatch:1.10.1@sha256:<digest>
     image: ghcr.io/imlenti/minerwatch:1.10.1
     # NOTE: no `user:` override. The image's entrypoint starts as root only to
     # fix ownership of the bind-mounted data dir, then drops to UID/GID 1000
