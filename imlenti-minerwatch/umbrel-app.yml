@@ -2,7 +2,7 @@ manifestVersion: 1
 id: imlenti-minerwatch
 category: bitcoin
 name: MinerWatch
-version: "1.10.11"
+version: "1.11.0"
 tagline: Real-time monitor for home Bitcoin miners
 icon: https://raw.githubusercontent.com/imlenti/minerwatch-app-store/main/imlenti-minerwatch/icon.png
 description: >-
@@ -37,6 +37,11 @@ description: >-
 
   AGPL-3.0 licensed. No telemetry, no accounts, no cloud — your data
   never leaves the LAN.
+
+
+  MinerWatch is free and built independently. If it earns a place in your
+  mining setup, star it on GitHub — that is how other home miners find
+  it — or lend it some hashrate from the in-app Donate page.
 releaseNotes: >-
   Installable from the MinerWatch Community App Store. Supports BitAxe,
   NerdQAxe, Canaan Avalon (Nano 3s and Q) and Braiins BMM 101. Polling at 5 s
@@ -57,5 +62,45 @@ path: ""
 defaultUsername: ""
 defaultPassword: ""
 torOnly: false
+# Desktop widgets. The endpoint host must be a compose service with a
+# bridge-network IP (umbreld resolves it via docker inspect). `web` is
+# host-networked, so we go through app_proxy, which listens on the
+# manifest port and forwards to the host-bound web service.
+widgets:
+  - id: "fleet"
+    type: "four-stats"
+    refresh: "5s"
+    endpoint: "app_proxy:8000/api/widgets/fleet"
+    link: ""
+    example:
+      type: "four-stats"
+      link: ""
+      items:
+        - title: "Hashrate"
+          text: "4.78"
+          subtext: "TH/s"
+        - title: "Miners online"
+          text: "4/4"
+        - title: "Best share"
+          text: "4.21"
+          subtext: "G"
+        - title: "Max temp"
+          text: "61"
+          subtext: "°C"
+  - id: "miners"
+    type: "list"
+    refresh: "5s"
+    endpoint: "app_proxy:8000/api/widgets/miners"
+    link: ""
+    example:
+      type: "list"
+      link: ""
+      items:
+        - subtext: "Lucky · Bitaxe Gamma"
+          text: "1.21 TH/s · 58 °C"
+        - subtext: "Garage · NerdQAxe++"
+          text: "4.78 TH/s · 61 °C"
+        - subtext: "Avalon Nano 3s"
+          text: "🔴 Offline · 2 h"
 submitter: imlenti
 submission: https://github.com/imlenti/MinerWatch
